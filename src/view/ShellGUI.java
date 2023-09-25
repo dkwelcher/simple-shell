@@ -96,10 +96,6 @@ public class ShellGUI {
 	}
 	
 	private String executeCommand(String command) {
-		if(commandController.isValidCommand(command)) {
-			return commandController.executeCommand(command);
-		} else {
-			return "Invalid command";
-		}
+		return commandController.executeCommand(command);
 	}
 }
