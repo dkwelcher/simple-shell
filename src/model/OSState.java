@@ -12,18 +12,6 @@ public class OSState {
 		initCurrentDir();
 	}
 	
-	public String getOsName() {
-		return this.osName;
-	}
-	
-	public File getCurrentDir() {
-		return this.currentDir;
-	}
-	
-	public void setCurrentDir(File currentDir) {
-		this.currentDir = currentDir;
-	}
-	
 	private void detectOS() {
 		this.osName = System.getProperty("os.name").toLowerCase();
 		
@@ -41,4 +29,21 @@ public class OSState {
 	private void initCurrentDir() {
 		this.currentDir = new File(System.getProperty("user.dir"));
 	}
+	
+	public String getOsName() {
+		return this.osName;
+	}
+	
+	public File getCurrentDir() {
+		return this.currentDir;
+	}
+	
+	public void setCurrentDir(File newDir) {
+		if(newDir != null && newDir.isDirectory()) {
+			this.currentDir = newDir;
+		} else {
+			throw new IllegalArgumentException("Provided path does not exist");
+		}
+	}
+	
 }
