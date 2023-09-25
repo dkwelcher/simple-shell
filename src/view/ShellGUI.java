@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import model.OSState;
+import controller.OSController;
 
 public class ShellGUI {
 	
@@ -17,10 +17,10 @@ public class ShellGUI {
 	private static final Color FOREGROUND_COLOR = new Color(255, 255, 255);
 	private static final Font TEXT_FONT = new Font("Verdana", Font.PLAIN, 18);
 	
-	private OSState osState;
+	private OSController osController;
 	
 	public ShellGUI() {
-		osState = new OSState();
+		osController = new OSController();
 		initializeGUI();
 	}
 	
@@ -60,7 +60,7 @@ public class ShellGUI {
 		textArea.setBackground(BACKGROUND_COLOR);
 		textArea.setForeground(FOREGROUND_COLOR);
 		textArea.setFont(TEXT_FONT);
-		textArea.append(osState.getCurrentDir().getAbsolutePath() + ">");
+		textArea.append(osController.getCurrentDirAbsPath() + ">");
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 		
 		textArea.addKeyListener(new KeyAdapter() {
@@ -78,7 +78,7 @@ public class ShellGUI {
 					
 					String command = textArea.getText().substring(promptIndex).trim();
 					String output = executeCommand(command);
-					String currentDir = osState.getCurrentDir().getAbsolutePath();
+					String currentDir = osController.getCurrentDirAbsPath();
 					
 					textArea.append("\n" + currentDir + ">" + output + "\n" + currentDir + ">");
 					
