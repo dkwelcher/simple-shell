@@ -1,0 +1,15 @@
+dir
+cd
+copy
+del
+more
+help
+notepad
+find
+ver
+date
+where
+set
+whoami
+ipconfig
+exit

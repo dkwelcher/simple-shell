@@ -1,0 +1,15 @@
+ls
+pwd
+cp
+rm
+more
+man
+nano
+grep
+uname
+date
+which
+env
+whoami
+ifconfig
+exit
