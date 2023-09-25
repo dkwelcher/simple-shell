@@ -16,8 +16,14 @@ public class OSController {
 		return this.osState.getCurrentDir().getAbsolutePath();
 	}
 	
-	public void changeCurrentDir(String path) {
-		File newDir = new File(path);
-		osState.setCurrentDir(newDir);
+	public String changeCurrentDir(String path) {
+		try {
+			File newDir = new File(path);
+			osState.setCurrentDir(newDir);
+			return "Directory changed to: " + newDir.getAbsolutePath();
+		} catch(IllegalArgumentException e) {
+			e.printStackTrace();
+			return e.getMessage();
+		}
 	}
 }
