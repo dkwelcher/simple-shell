@@ -20,27 +20,27 @@ public class OSState {
 		} else if(osName.contains("nix") ||
 				  osName.contains("nux") ||
 				  osName.contains("mac")) {
-			this.osName = "unix";
+			osName = "unix";
 		} else {
-			this.osName = "unsupported";
+			osName = "unsupported";
 		}
 	}
 	
 	private void initCurrentDir() {
-		this.currentDir = new File(System.getProperty("user.dir"));
+		currentDir = new File(System.getProperty("user.dir"));
 	}
 	
 	public String getOsName() {
-		return this.osName;
+		return osName;
 	}
 	
 	public File getCurrentDir() {
-		return this.currentDir;
+		return currentDir;
 	}
 	
 	public void setCurrentDir(File newDir) {
 		if(newDir != null && newDir.isDirectory()) {
-			this.currentDir = newDir;
+			currentDir = newDir;
 		} else {
 			throw new IllegalArgumentException("Provided path does not exist");
 		}
