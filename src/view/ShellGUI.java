@@ -66,6 +66,8 @@ public class ShellGUI {
 		textArea.append(osController.getCurrentDirAbsPath() + ">");
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 		
+		checkCommands();
+		
 		textArea.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent event) {
@@ -93,6 +95,22 @@ public class ShellGUI {
 		JScrollPane scrollPane = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panel.add(scrollPane);
 		return panel;
+	}
+	
+	private void checkCommands() {
+		if(commandController.getCommands() == null) {
+			textArea.append("There was a problem with reading the command file. Exiting in 5 seconds . . .");
+			
+			Timer timer = new Timer(5000, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.exit(0);
+				}
+			});
+			
+			timer.setRepeats(false);
+			timer.start();
+		}
 	}
 	
 	private String executeCommand(String command) {
