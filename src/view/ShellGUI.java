@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import controller.CommandController;
 import controller.OSController;
 
 public class ShellGUI {
@@ -18,9 +19,11 @@ public class ShellGUI {
 	private static final Font TEXT_FONT = new Font("Verdana", Font.PLAIN, 18);
 	
 	private OSController osController;
+	private CommandController commandController;
 	
 	public ShellGUI() {
 		osController = new OSController();
+		commandController = new CommandController();
 		initializeGUI();
 	}
 	
@@ -93,6 +96,10 @@ public class ShellGUI {
 	}
 	
 	private String executeCommand(String command) {
-		return command + " was executed";
+		if(commandController.isValidCommand(command)) {
+			return commandController.executeCommand(command);
+		} else {
+			return "Invalid command";
+		}
 	}
 }
