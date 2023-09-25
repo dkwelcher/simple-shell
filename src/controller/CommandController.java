@@ -3,6 +3,9 @@ package controller;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,14 +17,26 @@ public class CommandController {
 	private OSController osController;
 	private String os;
 	private List<String> commands;
+	private List<String> commandHistory;
 	
 	public CommandController() {
 		osController = new OSController();
 		os = osController.getOsName();
-		commands = readCommands(os);
+		
+		try {
+			commands = readCommands(os);
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		commandHistory = new LinkedList<>();
 	}
 	
-	private List<String> readCommands(String os) {
+	public List<String> getCommands() {
+		return commands;
+	}
+	
+	private List<String> readCommands(String os) throws IOException {
 		List<String> commands = new LinkedList<>();
 		String filePath = "";
 		
@@ -40,17 +55,64 @@ public class CommandController {
 			
 			return commands;
 		} catch(IOException e) {
-			e.printStackTrace();
+			throw new IOException("Problem with reading the command file");
 		}
 		
-		return null;
 	}
 	
-	public String executeCommand(String command) {
-		return "Command executed: " + command;
+	public String executeCommand(String input) {
+
+		String[] parts = input.split(" ");
+		String command = parts[0];
+		
+		if(!isValidCommand(command)) {
+			return "Invalid command";
+		}
+		
+		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
+			
+		ProcessBuilder processBuilder;
+			
+		if(args.length > 0) {
+			List<String> multiCommand = new ArrayList<>();
+			multiCommand.add(command);
+			multiCommand.addAll(Arrays.asList(args));
+			processBuilder = new ProcessBuilder(multiCommand);
+		} else {
+			processBuilder = new ProcessBuilder(command);
+		}
+			
+		String output;
+			
+		try {
+			Process process = processBuilder.start();
+			output = readOutput(process);
+		} catch(Exception e) {
+			output = e.getMessage();
+		}
+			
+		commandHistory.add(command);
+		return output;
 	}
 	
 	private boolean isValidCommand(String command) {
-		return true;
+		return command != null &&
+			   !command.isBlank() &&
+			   commands.contains(command);
+	}
+	
+	private String readOutput(Process process) {
+		String line;
+		StringBuilder sb = new StringBuilder();
+		
+		try(BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			while((line = reader.readLine()) != null) {
+				sb.append("\n").append(line);
+			}
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		return sb.toString();
 	}
 }
