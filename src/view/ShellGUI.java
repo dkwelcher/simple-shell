@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
+import model.OSState;
+
 public class ShellGUI {
 	
 	private JFrame frame;
@@ -15,7 +17,10 @@ public class ShellGUI {
 	private static final Color FOREGROUND_COLOR = new Color(255, 255, 255);
 	private static final Font TEXT_FONT = new Font("Verdana", Font.PLAIN, 18);
 	
+	private OSState osState;
+	
 	public ShellGUI() {
+		osState = new OSState();
 		initializeGUI();
 	}
 	
@@ -50,12 +55,12 @@ public class ShellGUI {
 		JPanel panel = new JPanel(new BorderLayout());
 		textArea = new JTextArea();
 		textArea.setLineWrap(true);
-		textArea.setWrapStyleWord(true);
+		textArea.setWrapStyleWord(false);
 		textArea.setEditable(true);
 		textArea.setBackground(BACKGROUND_COLOR);
 		textArea.setForeground(FOREGROUND_COLOR);
 		textArea.setFont(TEXT_FONT);
-		textArea.append(">");
+		textArea.append(osState.getCurrentDir().getAbsolutePath() + ">");
 		textArea.setCaretPosition(textArea.getDocument().getLength());
 		
 		textArea.addKeyListener(new KeyAdapter() {
@@ -73,8 +78,9 @@ public class ShellGUI {
 					
 					String command = textArea.getText().substring(promptIndex).trim();
 					String output = executeCommand(command);
+					String currentDir = osState.getCurrentDir().getAbsolutePath();
 					
-					textArea.append("\n>" + output + "\n>");
+					textArea.append("\n" + currentDir + ">" + output + "\n" + currentDir + ">");
 					
 					textArea.setCaretPosition(textArea.getDocument().getLength());
 				}
