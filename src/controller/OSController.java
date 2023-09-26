@@ -16,6 +16,10 @@ public class OSController {
 		return osState.getOsName();
 	}
 	
+	public File getCurrentDir() {
+		return osState.getCurrentDir();
+	}
+	
 	public String getCurrentDirAbsPath() {
 		return osState.getCurrentDir().getAbsolutePath();
 	}
