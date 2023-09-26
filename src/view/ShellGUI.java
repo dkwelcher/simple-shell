@@ -23,7 +23,7 @@ public class ShellGUI {
 	
 	public ShellGUI() {
 		osController = new OSController();
-		commandController = new CommandController();
+		commandController = new CommandController(osController);
 		initializeGUI();
 	}
 	
