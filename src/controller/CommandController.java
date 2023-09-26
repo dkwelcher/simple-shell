@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class CommandController {
 	
@@ -16,7 +18,7 @@ public class CommandController {
 
 	private OSController osController;
 	private String os;
-	private List<String> commands;
+	private Map<String, List<String>> commands;
 	private List<String> commandHistory;
 	
 	public CommandController() {
@@ -32,12 +34,12 @@ public class CommandController {
 		commandHistory = new LinkedList<>();
 	}
 	
-	public List<String> getCommands() {
+	public Map<String, List<String>> getCommands() {
 		return commands;
 	}
 	
-	private List<String> readCommands(String os) throws IOException {
-		List<String> commands = new LinkedList<>();
+	private Map<String, List<String>> readCommands(String os) throws IOException {
+		Map<String, List<String>> commandToArgs = new HashMap<>();
 		String filePath = "";
 		
 		if(os.equals("windows")) {
@@ -50,10 +52,13 @@ public class CommandController {
 			String command;
 			
 			while((command = reader.readLine()) != null) {
-				commands.add(command);
+				String[] parts = command.split(",");
+				String key = parts[0];
+				List<String> valueList = Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length));
+				commandToArgs.put(key, valueList);
 			}
 			
-			return commands;
+			return commandToArgs;
 		} catch(IOException e) {
 			throw new IOException("Problem with reading the command file");
 		}
@@ -65,23 +70,21 @@ public class CommandController {
 		String[] parts = input.split(" ");
 		String command = parts[0];
 		
+		if("exit".equals(command)) {
+			System.exit(0);
+		}
+		
 		if(!isValidCommand(command)) {
 			return "Invalid command";
 		}
 		
-		String[] args = Arrays.copyOfRange(parts, 1, parts.length);
-			
-		ProcessBuilder processBuilder;
-			
-		if(args.length > 0) {
-			List<String> multiCommand = new ArrayList<>();
-			multiCommand.add(command);
-			multiCommand.addAll(Arrays.asList(args));
-			processBuilder = new ProcessBuilder(multiCommand);
-		} else {
-			processBuilder = new ProcessBuilder(command);
+		List<String> commandArgs = new ArrayList<>(commands.get(command));
+		
+		if(parts.length > 1) {
+			commandArgs.addAll(Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length)));
 		}
-			
+		
+		ProcessBuilder processBuilder = new ProcessBuilder(commandArgs);	
 		String output;
 			
 		try {
@@ -92,13 +95,18 @@ public class CommandController {
 		}
 			
 		commandHistory.add(command);
+		
+		if("del".equals(command)) {
+			return "Deleted file";
+		}
+		
 		return output;
 	}
 	
 	private boolean isValidCommand(String command) {
 		return command != null &&
 			   !command.isBlank() &&
-			   commands.contains(command);
+			   commands.containsKey(command);
 	}
 	
 	private String readOutput(Process process) {
