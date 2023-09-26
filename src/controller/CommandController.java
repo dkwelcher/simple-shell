@@ -1,68 +1,40 @@
 package controller;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import model.CommandReader;
+
 public class CommandController {
-	
-	private static final String WINDOWS_CMDS_FILE_PATH = "./res/syscmds/window-commands.txt";
-	private static final String UNIX_CMDS_FILE_PATH = "./res/syscmds/unix-commands.txt";
 
 	private OSController osController;
+	private CommandReader commandReader;
 	private String os;
 	private Map<String, List<String>> commands;
-	private List<String> commandHistory;
+	private Map<String, Integer> commandHistory;
 	
 	public CommandController(OSController osController) {
 		this.osController = osController;
 		os = osController.getOsName();
+		commandReader = new CommandReader(os);
 		
 		try {
-			commands = readCommands(os);
+			commands = commandReader.readCommands();
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 		
-		commandHistory = new LinkedList<>();
+		commandHistory = new HashMap<>();
 	}
 	
 	public Map<String, List<String>> getCommands() {
 		return commands;
-	}
-	
-	private Map<String, List<String>> readCommands(String os) throws IOException {
-		Map<String, List<String>> commandToArgs = new HashMap<>();
-		String filePath = "";
-		
-		if(os.equals("windows")) {
-			filePath = WINDOWS_CMDS_FILE_PATH;
-		} else if(os.equals("unix")) {
-			filePath = UNIX_CMDS_FILE_PATH;
-		}
-		
-		try(BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-			String command;
-			
-			while((command = reader.readLine()) != null) {
-				String[] parts = command.split(",");
-				String key = parts[0];
-				List<String> valueList = Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length));
-				commandToArgs.put(key, valueList);
-			}
-			
-			return commandToArgs;
-		} catch(IOException e) {
-			throw new IOException("Problem with reading the command file");
-		}
-		
 	}
 	
 	public String executeCommand(String input) {
@@ -70,16 +42,20 @@ public class CommandController {
 		String[] parts = input.split(" ");
 		String command = parts[0];
 		
+		if(!isValidCommand(command)) {
+			return "Invalid command";
+		}
+		
 		if("exit".equals(command)) {
 			System.exit(0);
 		}
 		
-		if("cd".equals(command) && parts.length > 1) {
-			return osController.changeCurrentDir(parts[1]);
+		if("cd".equals(command)) {
+			return executeChangeDirCommand(command, parts);
 		}
 		
-		if(!isValidCommand(command)) {
-			return "Invalid command";
+		if("history".equals(command)) {
+			return executeHistoryCommand(command);
 		}
 		
 		List<String> commandArgs = new ArrayList<>(commands.get(command));
@@ -104,10 +80,14 @@ public class CommandController {
 			output = e.getMessage();
 		}
 			
-		commandHistory.add(command);
+		recordCommandHistory(command);
 		
 		if("del".equals(command)) {
 			return "Deleted file";
+		}
+		
+		if(output.isEmpty()) {
+			return "Incomplete command arguments";
 		}
 		
 		return output;
@@ -117,6 +97,41 @@ public class CommandController {
 		return command != null &&
 			   !command.isBlank() &&
 			   commands.containsKey(command);
+	}
+	
+	private String executeChangeDirCommand(String command, String[] parts) {
+		if(parts.length > 1) {
+			recordCommandHistory(command);
+			return osController.changeCurrentDir(parts[1]);
+		} else {
+			return "Incomplete command arguments";
+		}
+	}
+	
+	private String executeHistoryCommand(String command) {
+		StringBuilder sb = new StringBuilder();
+		
+		for(Map.Entry<String, Integer> usedCommand : commandHistory.entrySet()) {
+			if(sb.length() == 0) {
+				sb.append(usedCommand.getKey() + "(" + usedCommand.getValue() + ")");
+			} else {
+				sb.append(", " + usedCommand.getKey() + "(" + usedCommand.getValue() + ")");
+			}
+		}
+		
+		if(sb.length() == 0) {
+			return "No command history exists";
+		}
+		
+		return sb.toString();
+	}
+	
+	private void recordCommandHistory(String command) {
+		if(commandHistory.containsKey(command)) {
+			commandHistory.put(command, commandHistory.get(command) + 1);
+		} else {
+			commandHistory.put(command, 1);
+		}
 	}
 	
 	private String readOutput(Process process) {
