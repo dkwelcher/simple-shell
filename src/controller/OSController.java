@@ -30,7 +30,6 @@ public class OSController {
 			osState.setCurrentDir(newDir);
 			return "Directory changed to: " + newDir.getAbsolutePath();
 		} catch(IllegalArgumentException e) {
-			e.printStackTrace();
 			return e.getMessage();
 		}
 	}
