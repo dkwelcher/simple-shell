@@ -13,3 +13,4 @@ env,/usr/bin/env
 whoami,/usr/bin/whoami
 ifconfig,/sbin/ifconfig
 exit,/bin/exit
+history

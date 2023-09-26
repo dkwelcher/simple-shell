@@ -13,3 +13,4 @@ set,cmd.exe,/c,set
 whoami,whoami.exe
 ipconfig,ipconfig.exe
 exit,cmd.exe,/c,exit
+history
