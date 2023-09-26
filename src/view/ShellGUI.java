@@ -25,6 +25,7 @@ public class ShellGUI {
 		osController = new OSController();
 		commandController = new CommandController(osController);
 		initializeGUI();
+		checkCommands();
 	}
 	
 	public static void main(String[] args) {
@@ -65,8 +66,6 @@ public class ShellGUI {
 		textArea.setFont(TEXT_FONT);
 		textArea.append(osController.getCurrentDirAbsPath() + ">");
 		textArea.setCaretPosition(textArea.getDocument().getLength());
-		
-		checkCommands();
 		
 		textArea.addKeyListener(new KeyAdapter() {
 			@Override
