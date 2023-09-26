@@ -21,8 +21,8 @@ public class CommandController {
 	private Map<String, List<String>> commands;
 	private List<String> commandHistory;
 	
-	public CommandController() {
-		osController = new OSController();
+	public CommandController(OSController osController) {
+		this.osController = osController;
 		os = osController.getOsName();
 		
 		try {
@@ -74,6 +74,10 @@ public class CommandController {
 			System.exit(0);
 		}
 		
+		if("cd".equals(command) && parts.length > 1) {
+			return osController.changeCurrentDir(parts[1]);
+		}
+		
 		if(!isValidCommand(command)) {
 			return "Invalid command";
 		}
@@ -82,9 +86,15 @@ public class CommandController {
 		
 		if(parts.length > 1) {
 			commandArgs.addAll(Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length)));
+			if("find".equals(command)) {
+				commandArgs.add("\t");
+			}
 		}
 		
 		ProcessBuilder processBuilder = new ProcessBuilder(commandArgs);	
+		
+		processBuilder.directory(osController.getCurrentDir());
+		
 		String output;
 			
 		try {
