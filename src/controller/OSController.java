@@ -2,7 +2,7 @@ package controller;
 
 import java.io.File;
 
-import model.OSState;
+import data.OSState;
 
 public class OSController {
 
