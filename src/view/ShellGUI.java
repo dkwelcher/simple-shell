@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-import controller.CommandController;
+import controller.CommandExecutor;
 import controller.OSController;
 
 public class ShellGUI {
@@ -19,11 +19,11 @@ public class ShellGUI {
 	private static final Font TEXT_FONT = new Font("Verdana", Font.PLAIN, 18);
 	
 	private OSController osController;
-	private CommandController commandController;
+	private CommandExecutor commandExecutor;
 	
 	public ShellGUI() {
 		osController = new OSController();
-		commandController = new CommandController(osController);
+		commandExecutor = new CommandExecutor(osController);
 		initializeGUI();
 		checkCommands();
 	}
@@ -97,7 +97,7 @@ public class ShellGUI {
 	}
 	
 	private void checkCommands() {
-		if(commandController.getCommands() == null) {
+		if(commandExecutor.getCommands() == null) {
 			textArea.append("There was a problem with reading the command file. Exiting in 5 seconds . . .");
 			
 			Timer timer = new Timer(5000, new ActionListener() {
@@ -113,6 +113,6 @@ public class ShellGUI {
 	}
 	
 	private String executeCommand(String command) {
-		return commandController.executeCommand(command);
+		return commandExecutor.executeCommand(command);
 	}
 }

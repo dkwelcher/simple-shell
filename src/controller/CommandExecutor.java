@@ -11,7 +11,7 @@ import java.util.Map;
 
 import model.CommandReader;
 
-public class CommandController {
+public class CommandExecutor {
 
 	private OSController osController;
 	private CommandReader commandReader;
@@ -19,7 +19,7 @@ public class CommandController {
 	private Map<String, List<String>> commands;
 	private Map<String, Integer> commandHistory;
 	
-	public CommandController(OSController osController) {
+	public CommandExecutor(OSController osController) {
 		this.osController = osController;
 		os = osController.getOsName();
 		commandReader = new CommandReader(os);
@@ -50,7 +50,7 @@ public class CommandController {
 			System.exit(0);
 		}
 		
-		if("cd".equals(command)) {
+		if("cd".equals(command) || "pwd".equals(command)) {
 			return executeChangeDirCommand(command, parts);
 		}
 		
@@ -62,7 +62,7 @@ public class CommandController {
 		
 		if(parts.length > 1) {
 			commandArgs.addAll(Arrays.asList(Arrays.copyOfRange(parts, 1, parts.length)));
-			if("find".equals(command)) {
+			if("find".equals(command) || "grep".equals(command)) {
 				commandArgs.add("\t");
 			}
 		}
@@ -82,7 +82,7 @@ public class CommandController {
 			
 		recordCommandHistory(command);
 		
-		if("del".equals(command)) {
+		if("del".equals(command) || "rm".equals(command)) {
 			return "Deleted file";
 		}
 		
