@@ -2,8 +2,7 @@
 
 This is the solution to homework assignment 1: a simple shell interface which accepts user commands and executes each command as an external process; the shell runs both Unix commands and MS-DOS commands.
 
-RUN THE PROGRAM FROM ShellGUI.java
-Files provided in root directory for testing find, copy, del commands.
+RUN THE PROGRAM FROM ShellGUI.java. Files provided in root directory for testing find, copy, del commands.
 
 ## Inconsistencies
 
